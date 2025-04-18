@@ -63,7 +63,7 @@
             <div class="direction-indicator south">S</div>
         </div>
         <div class="direction-guide">
-            <span class="direction-tip">Nota: El rover avanzará en la dirección a la que apunta su brazo robótico</span>
+            <span class="direction-tip">Note: The rover will move in the direction its robotic arm is pointing</span>
         </div>
     </div>
     <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
