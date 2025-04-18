@@ -1,41 +1,72 @@
 <template>
     <div class="mars">
         <div class="mars-container">
-            <div class="grid-container">
-                <div
-                    v-for="i in getVisibleRows()"
-                    :key="i"
-                    class="row"
-                >
+            <div class="direction-indicator north">N</div>
+            <div class="grid-wrapper">
+                <div class="direction-indicator west">W</div>
+                <div class="row-indicators">
+                    <div
+                        v-for="i in getVisibleRows()"
+                        :key="i"
+                        class="row-indicator"
+                    >
+                        {{ i }}
+                    </div>
+                </div>
+                <div class="grid-container">
+                    <div
+                        v-for="i in getVisibleRows()"
+                        :key="i"
+                        class="row"
+                    >
+                        <div
+                            v-for="j in getVisibleCols()"
+                            :key="j"
+                            class="cell"
+                            :class="{
+                                'obstacle': isObstacle(j, i),
+                                'rover': isRover(j, i),
+                                'out-of-bounds': isOutOfBounds(j, i)
+                            }"
+                        >
+                            <div
+                                v-if="isRover(j, i)"
+                                class="rover"
+                            ><img 
+                                src="/public/img/rover.png" 
+                                title="rover" 
+                                class="rover-img"
+                                :style="roverRotationStyle"
+                            ></div>
+                            <div
+                                v-if="isObstacle(j, i) && !isOutOfBounds(j, i)"
+                                class="obstacle"
+                            ><img src="/public/img/obstacle.png" title="obstacle" class="obstacle-img"></div>
+                            <span class="coords" :class="{'small-coords': j > 99 || i > 99}" v-if="showCellCoords">{{ j }},{{ i }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="direction-indicator east">E</div>
+            </div>
+            <div class="col-indicators-container">
+                <div class="col-indicators-offset"></div>
+                <div class="col-indicators">
                     <div
                         v-for="j in getVisibleCols()"
                         :key="j"
-                        class="cell"
-                        :class="{
-                            'obstacle': isObstacle(j, i),
-                            'rover': isRover(j, i),
-                            'out-of-bounds': isOutOfBounds(j, i)
-                        }"
+                        class="col-indicator"
                     >
-                        <div
-                            v-if="isRover(j, i)"
-                            class="rover"
-                        ><img 
-                            src="/public/img/rover.png" 
-                            title="rover" 
-                            class="rover-img"
-                            :style="roverRotationStyle"
-                        ></div>
-                        <div
-                            v-if="isObstacle(j, i) && !isOutOfBounds(j, i)"
-                            class="obstacle"
-                        ><img src="/public/img/obstacle.png" title="obstacle" class="obstacle-img"></div>
-                        <span class="coords">{{ j }},{{ i }}</span>
+                        {{ j }}
                     </div>
                 </div>
             </div>
+            <div class="direction-indicator south">S</div>
+        </div>
+        <div class="direction-guide">
+            <span class="direction-tip">Nota: El rover avanzará en la dirección a la que apunta su brazo robótico</span>
         </div>
     </div>
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     <div class="rover-info">
         <div class="coords-info">
             <span class="info-label">Current coordinates:</span>
@@ -67,7 +98,6 @@
                 <button @click="savePosition" class="save-btn">Save position</button>
             </div>
         </div>
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 </template>
 
@@ -108,6 +138,7 @@
                 isAnimating: false,
                 savedSuccessMessage: '', // Success message for saving
                 saveTimeout: null, // To control message timing
+                showCellCoords: false, // Toggle for showing coordinates in cells
             }
         },
         created() {
@@ -399,8 +430,56 @@
     
     .mars-container {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        position: relative;
+    }
+    
+    .grid-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .row-indicators {
+        display: flex;
+        flex-direction: column;
+        margin-right: 5px;
+    }
+    
+    .row-indicator {
+        height: 3.5vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: var(--dark-red);
+        min-width: 20px;
+    }
+    
+    .col-indicators-container {
+        display: flex;
+        margin-top: 5px;
+    }
+    
+    .col-indicators-offset {
+        width: 25px; /* Match width of row indicators */
+    }
+    
+    .col-indicators {
+        display: flex;
+    }
+    
+    .col-indicator {
+        width: 3.5vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: var(--dark-red);
     }
     
     .grid-container {
@@ -410,6 +489,39 @@
         border-radius: 4px;
         overflow: hidden;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .direction-indicator {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--dark-red);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(232, 193, 160, 0.5);
+        border-radius: 50%;
+        margin: 5px;
+    }
+    
+    .direction-indicator.north {
+        margin-bottom: 5px;
+    }
+    
+    .direction-indicator.south {
+        margin-top: 5px;
+    }
+    
+    .direction-guide {
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .direction-tip {
+        font-size: 14px;
+        color: var(--dark-red);
+        font-style: italic;
     }
     
     .row{
@@ -428,7 +540,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: rgba(232, 144, 144, 0.4);
+        background-color: rgba(232, 144, 144);
     }
     
     .obstacle{
@@ -460,6 +572,10 @@
         bottom: 1px;
         right: 1px;
         color: rgba(75, 38, 38, 0.6);
+    }
+    
+    .small-coords {
+        font-size: 6px;
     }
     
     .rover-info {
@@ -607,6 +723,37 @@
         
         .buttons-group {
             flex-direction: column;
+        }
+        
+        .direction-indicator {
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .small-coords {
+            font-size: 5px;
+        }
+        
+        .direction-tip {
+            font-size: 12px;
+        }
+        
+        .row-indicator, .col-indicator {
+            font-size: 10px;
+        }
+        
+        .row-indicator {
+            height: 3vh;
+            min-width: 16px;
+        }
+        
+        .col-indicators-offset {
+            width: 21px;
+        }
+        
+        .col-indicator {
+            width: 3vh;
         }
     }
 </style>
