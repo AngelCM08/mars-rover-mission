@@ -1,66 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mars Rover Mission
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Language / Idioma / Idioma
+- [English (current)](#mars-rover-mission)
+- [Español](/README_ES.md)
+- [Català](/README_CA.md)
 
-## About Laravel
+## Project Description
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project implements an interactive simulation of a Mars rover, allowing users to control a rover on a Martian surface represented as a grid. The project is built using Laravel for the backend and Vue.js for the frontend, with an interactive graphical interface that displays the position and direction of the rover.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Demo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+[![Mars Rover Mission Demo](https://img.youtube.com/vi/c4FEZmLOL2w/0.jpg)](https://youtu.be/c4FEZmLOL2w)
 
-## Learning Laravel
+Click on the image above to watch a demonstration of the Mars Rover Mission in action.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Main Features
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Visualization of a Martian surface as a grid with randomly generated obstacles
+- Rover control through simple commands (F: Forward, L: Turn Left, R: Turn Right)
+- Obstacle and map boundary detection
+- Real-time tracking and visualization of rover position and orientation
+- Data persistence through automatic saving of rover position
+- Responsive and user-friendly interface
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure
 
-## Laravel Sponsors
+### Frontend (Vue.js)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+The main component `Mars.vue` handles the visualization and user interaction logic:
 
-### Premium Partners
+- **Map Visualization**: A grid showing the Martian surface with direction indicators (N, S, E, W) and coordinates on the margins.
+- **Rover Representation**: Image of a rover with dynamic rotation according to its direction.
+- **Control Panel**: Allows the user to input and execute commands.
+- **Information Panel**: Displays the current coordinates and direction of the rover.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Backend (Laravel)
 
-## Contributing
+The backend provides APIs for:
+- Saving the rover's position (`/api/rover/save-position`)
+- Retrieving the saved position of the rover
+- Managing the logic of obstacles and map boundaries
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Rover Movement Algorithm
 
-## Code of Conduct
+The rover movement algorithm implements the following rules:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Move Forward (F)**: The rover moves one unit in the current direction.
+   - If there is an obstacle in the destination cell, the movement is canceled and an error message is displayed.
+   - If the movement would take the rover outside the map boundaries, a warning message is displayed.
 
-## Security Vulnerabilities
+2. **Turn Left (L)**: The rover rotates 90 degrees counterclockwise.
+   - N → W → S → E → N
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Turn Right (R)**: The rover rotates 90 degrees clockwise.
+   - N → E → S → W → N
 
-## License
+Each movement or turn is visually animated to provide feedback to the user.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Technical Features
+
+### Map Generation
+
+- The map is a 200x200 cell grid.
+- Obstacles are randomly generated with a 15% probability per cell.
+- A 11x11 cell viewport centered on the rover is used to optimize performance.
+
+### Animations
+
+- Smooth rover rotation when turning (using CSS transitions).
+- Visual feedback for valid and invalid commands.
+
+### Data Persistence
+
+- The rover's position is automatically saved after each movement through API calls.
+- A success notification is displayed when saving.
+
+## Optimization and Performance
+
+- Conditional rendering of visible cells to improve performance.
+- Dynamic calculation of visible coordinates based on rover position.
+- Coordinate indicators on the map margins for easier orientation without overloading the interface.
+
+## UX/UI Considerations
+
+- Clear direction indicators (N, S, E, W) for easier orientation.
+- Intuitive interface with visual feedback for each action.
+- Rover with rotation that visually indicates its direction (the robotic arm points in the direction of movement).
+- Responsive design that adapts to different screen sizes.
+- Clear error messages and consistent visual formatting.
+
+## Technologies Used
+
+- **Frontend**: Vue.js, CSS3, HTML5
+- **Backend**: Laravel, PHP
+- **Communication**: Axios for REST API calls
+- **Styling**: Custom CSS with variables for color consistency
+
+## Architecture
+
+The project follows a client-server architecture:
+
+1. **Client** (Vue.js):
+   - Handles user interaction and visualization
+   - Implements rover movement logic
+   - Communicates with the server for data persistence
+
+2. **Server** (Laravel):
+   - Manages data persistence
+   - Provides APIs for rover operations
+
+## Installation and Configuration
+
+### Prerequisites
+
+- PHP 8.0 or higher
+- Composer
+- Node.js and npm
+- MySQL or compatible database
+
+### Installation Steps
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/mars-rover-mission.git
+   cd mars-rover-mission
+   ```
+
+2. Install PHP dependencies:
+   ```
+   composer install
+   ```
+
+3. Install JavaScript dependencies:
+   ```
+   npm install
+   ```
+
+4. Configure the environment:
+   - Copy `.env.example` to `.env`
+   - Configure the database connection in `.env`
+
+5. Generate application key:
+   ```
+   php artisan key:generate
+   ```
+
+6. Run migrations:
+   ```
+   php artisan migrate
+   ```
+
+7. Compile frontend resources:
+   ```
+   npm run dev
+   ```
+
+8. Start the server:
+   ```
+   php artisan serve
+   ```
+
+## Implementation Decisions
+
+### Design Approach
+
+A clean and functional interface has been prioritized, with clear visual feedback on the rover's state and its environment. The coordinate indicators on the margins allow users to orient themselves without visually overloading the map.
+
+### Performance Optimization
+
+To efficiently handle a large map (200x200), only an 11x11 viewport around the rover is rendered. This allows for a fluid experience even on less powerful devices.
+
+### Error Management
+
+Robust error handling is implemented with clear messages for:
+- Detected obstacles
+- Attempts to exit the map
+- Invalid commands
+- Server communication errors
+
+## Future Improvements
+
+- Implementation of different terrain types with effects on movement
+- Multiplayer mode with multiple rovers
+- Mission and objective system
+- Movement and efficiency statistics
+- Touch device support with gesture controls
+
+## Conclusion
+
+This project demonstrates skills in:
+- Frontend development with Vue.js
+- Responsive interface design
+- Implementation of complex business logic
+- Client-server communication
+- State and transition handling
+- Performance optimization
+
+The Mars Rover simulation represents an interesting technical challenge that combines algorithms, interface design, and object-oriented programming in a practical and visually attractive context.
+
